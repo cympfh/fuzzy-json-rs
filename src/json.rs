@@ -1,3 +1,6 @@
+extern crate json;
+use json::stringify;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum JSON {
     Int(i128),
@@ -16,7 +19,7 @@ impl JSON {
             Int(x) => format!("{}", x),
             Float(x) => format!("{}", x),
             Bool(x) => format!("{:?}", x),
-            Str(x) => format!("{:?}", x),
+            Str(x) => stringify(x.to_string()),
             Array(xs) => format!(
                 "[{}]",
                 xs.iter()

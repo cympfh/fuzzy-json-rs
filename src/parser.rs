@@ -27,6 +27,7 @@ pub fn parse_data(input: &str) -> IResult<&str, JSON> {
         parse_dict,
         parse_array,
         parse_null,
+        parse_bool,
         parse_str,
         parse_float,
         parse_int,
@@ -78,6 +79,33 @@ pub fn parse_null(input: &str) -> IResult<&str, JSON> {
             tag("Nothing"),
         )),
     )(input)
+}
+
+pub fn parse_bool(input: &str) -> IResult<&str, JSON> {
+    alt((
+        value(
+            JSON::Bool(true),
+            alt((
+                tag("true"),
+                tag("True"),
+                tag("TRUE"),
+                tag("yes"),
+                tag("Yes"),
+                tag("YES"),
+            )),
+        ),
+        value(
+            JSON::Bool(false),
+            alt((
+                tag("false"),
+                tag("False"),
+                tag("FALSE"),
+                tag("no"),
+                tag("No"),
+                tag("NO"),
+            )),
+        ),
+    ))(input)
 }
 
 pub fn parse_int(input: &str) -> IResult<&str, JSON> {
@@ -232,6 +260,8 @@ mod test_parser {
         assert_value!("null", JSON::Null);
         assert_value!("None", JSON::Null);
         assert_value!("NUL.", JSON::Null);
+        assert_value!("yes.", JSON::Bool(true));
+        assert_value!("NO NO.", JSON::Bool(false));
         assert_value!("This is a NULL.", JSON::Null);
         assert_value!("PI is 3.141", JSON::Float(3.141));
         assert_value!("PI is 3.", JSON::Int(3));
